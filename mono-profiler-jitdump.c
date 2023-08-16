@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 
+#include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/class-internals.h>
 #include <mono/metadata/domain-internals.h>
 #include <mono/metadata/profiler.h>
@@ -108,13 +109,13 @@ mono_enable_jit_dump (void)
 		
 		g_snprintf (name, sizeof (name), "/tmp/jit-%d.dump", perf_dump_pid);
 		unlink (name);
+
+        // samply hooks open to see if something is writing to a jit*.dump file
 		perf_dump_file = fopen (name, "w");
 		
 		add_file_header_info (&header);
 		if (perf_dump_file) {
 			fwrite (&header, sizeof (header), 1, perf_dump_file);
-			//This informs perf of the presence of the jitdump file and support for the feature.
-			perf_dump_mmap_addr = mmap (NULL, sizeof (header), PROT_READ | PROT_EXEC, MAP_PRIVATE, fileno (perf_dump_file), 0);
 		}
 		
 		mono_os_mutex_unlock (&perf_dump_mutex);
@@ -141,7 +142,9 @@ mono_emit_jit_dump (MonoJitInfo *jinfo, gpointer code)
 	
 	if (perf_dump_file) {
 		JitCodeLoadRecord record;
-		size_t nameLen = strlen (jinfo->d.method->name);
+        char* name = mono_method_full_name(jinfo->d.method, FALSE);
+        size_t nameLen = strlen(name);
+		//size_t nameLen = strlen (jinfo->d.method->name);
 		memset (&record, 0, sizeof (record));
 		
 		add_basic_JitCodeLoadRecord_info (&record);
@@ -159,8 +162,11 @@ mono_emit_jit_dump (MonoJitInfo *jinfo, gpointer code)
 		record.header.timestamp = clock_get_time_ns (clock_id);
 		
 		fwrite (&record, sizeof (record), 1, perf_dump_file);
-		fwrite (jinfo->d.method->name, nameLen + 1, 1, perf_dump_file);
+		//fwrite (jinfo->d.method->name, nameLen + 1, 1, perf_dump_file);
+		fwrite (name, nameLen + 1, 1, perf_dump_file);
 		fwrite (code, jinfo->code_size, 1, perf_dump_file);
+
+        free(name);
 
 		mono_os_mutex_unlock (&perf_dump_mutex);
 	}

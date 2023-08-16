@@ -15,11 +15,14 @@ LDFLAGS=\
 	-lmonobdwgc-2.0 \
 	$(NULL)
 
-all: libmono-profiler-jitdump.dylib jitdump-dump
+all: libmono-profiler-jitdump.dylib
 
-libmono-profiler-jitdump.dylib: jitdump.c
+libmono-profiler-jitdump.dylib: mono-profiler-jitdump.c
 	clang $(CFLAGS) $(LDFLAGS) -dynamiclib -o $@ $^
 	install_name_tool -change @executable_path/../Frameworks/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib @executable_path/../Frameworks/MonoBleedingEdge/MonoEmbedRuntime/osx/libmonobdwgc-2.0.dylib libmono-profiler-jitdump.dylib
 
 jitdump-dump: jitdump-dump.c
 	clang -O1 -o $@ $^
+
+clean: 
+	rm -f libmono-profiler-jitdump.dylib jitdump-dump
