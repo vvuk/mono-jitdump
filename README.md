@@ -2,7 +2,15 @@
 
 This is a simple Mono profiler plugin that writes [jit-dump](https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/jitdump-specification.txt) compatible data files on OSX (and Linux).  It interfaces with compatible profilers such as [samply](https://github.com/mstange/samply) (OSX + Linux) or `perf` (Linux) to provide them with JIT method information at runtime.
 
-Install [samply](https://github.com/mstange/samply) via `cargo install samply`. (Install Rust and `cargo`` via https://rustup.rs)
+Install Rust and `cargo` via https://rustup.rs .
+
+Install [samply](https://github.com/mstange/samply) _from source_ (~via `cargo install samply`~ -- prebuilt version has issues):
+
+```
+git clone http://github.com/mstange/samply
+cd samply/samply
+cargo install --path .
+```
 
 Samply automatically handles domain reload (which causes all jit methods to be evicted) by simply evicting any jit method information if a new jit code block is received that overlaps any existing methods. Overlapping methods are removed from the data table.
 
