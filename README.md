@@ -15,7 +15,7 @@ To verify that the profiler module is being loaded, `Editor.log` will contain `#
 You need to build this profiler plugin and make it available to Unity.
 
 1. `make`
-2. cd `path/to/Unity.app/Contents/lib`
+2. cd `path/to/Unity.app/Contents/lib` (if the `lib` directory does not exist, create it)
 3. `ln -s path-to-this-repo/build/libmono-profiler-jitdump.dylib .` (or `cp`)
 
 ## Profiling
