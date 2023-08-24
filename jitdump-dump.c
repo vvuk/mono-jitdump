@@ -16,7 +16,7 @@ typedef struct
     uint32_t version;
     uint32_t total_size;
     uint32_t elf_mach;
-    //uint32_t pad1; // v2
+    uint32_t pad1;
     uint32_t pid;
     uint64_t timestamp;
     uint64_t flags;
@@ -36,7 +36,7 @@ typedef struct
     uint32_t tid;
     uint64_t vma;
     uint64_t code_addr;
-    //uint64_t code_size; // v2
+    uint64_t code_size;
     uint64_t code_index;
     // The actual function name and native code will follow after this struct in memory.
 } JitCodeLoadRecord;
